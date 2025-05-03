@@ -28,7 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             picDisplay = new PictureBox();
+            timer1 = new System.Windows.Forms.Timer(components);
             ((System.ComponentModel.ISupportInitialize)picDisplay).BeginInit();
             SuspendLayout();
             // 
@@ -39,6 +41,12 @@
             picDisplay.Size = new Size(776, 426);
             picDisplay.TabIndex = 0;
             picDisplay.TabStop = false;
+            // 
+            // timer1
+            // 
+            timer1.Enabled = true;
+            timer1.Interval = 40;
+            timer1.Tick += timer1_Tick;
             // 
             // Form1
             // 
@@ -55,5 +63,6 @@
         #endregion
 
         private PictureBox picDisplay;
+        private System.Windows.Forms.Timer timer1;
     }
 }
