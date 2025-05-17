@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Drawing;
 
 namespace laba6_technology
 {
@@ -13,8 +10,10 @@ namespace laba6_technology
         public float Y;
         public float SpeedX;
         public float SpeedY;
+        public bool IsTeleported = false;
         public float Life;
         public static Random rand = new Random();
+
         public Particle()
         {
             var direction = (double)rand.Next(360);
@@ -24,25 +23,21 @@ namespace laba6_technology
             Radius = 2 + rand.Next(10);
             Life = 20 + rand.Next(100);
         }
+
         public virtual void Draw(Graphics g)
         {
             float k = Math.Min(1f, Life / 100);
             int alpha = (int)(k * 255);
             var color = Color.FromArgb(alpha, Color.Black);
-            var b = new SolidBrush(color);
+            using var b = new SolidBrush(color);
             g.FillEllipse(b, X - Radius, Y - Radius, Radius * 2, Radius * 2);
-
-            b.Dispose();
         }
-
     }
     public class ParticleColorful : Particle
     {
-        // два новых поля под цвет начальный и конечный
         public Color FromColor;
         public Color ToColor;
 
-        // для смеси цветов
         public static Color MixColor(Color color1, Color color2, float k)
         {
             return Color.FromArgb(
@@ -53,18 +48,12 @@ namespace laba6_technology
             );
         }
 
-        // ну и отрисовку перепишем
         public override void Draw(Graphics g)
         {
             float k = Math.Min(1f, Life / 100);
-
-            // так как k уменьшается от 1 до 0, то порядок цветов обратный
             var color = MixColor(ToColor, FromColor, k);
-            var b = new SolidBrush(color);
-
+            using var b = new SolidBrush(color);
             g.FillEllipse(b, X - Radius, Y - Radius, Radius * 2, Radius * 2);
-
-            b.Dispose();
         }
     }
 }

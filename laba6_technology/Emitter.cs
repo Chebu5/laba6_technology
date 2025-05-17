@@ -1,19 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace laba6_technology
 {
-    class Emitter
+    public class Emitter
     {
-        List<Particle> particles = new List<Particle>();
+        private List<Particle> particles = new List<Particle>();
         public List<Point> gravityPoints = new List<Point>();
         public int MousePositionX;
         public int MousePositionY;
         public float GravitationX = 0;
         public float GravitationY = 1;
+        public PointF ParticleSpawnPoint { get; set; }
+
+        public Teleporter Teleporter { get; set; }
+
+        public int ParticlesCount => particles.Count;
 
         public void UpdateState()
         {
@@ -22,44 +24,57 @@ namespace laba6_technology
                 particle.Life -= 1;
                 if (particle.Life < 0)
                 {
-                
                     particle.Life = 20 + Particle.rand.Next(100);
-                    particle.X = MousePositionX;
-                    particle.Y = MousePositionY;
-                    var direction = (double)Particle.rand.Next(360);
-                    var speed = 1 + Particle.rand.Next(10);
+                    particle.X = ParticleSpawnPoint.X;
+                    particle.Y = ParticleSpawnPoint.Y;
 
-                    particle.SpeedX = (float)(Math.Cos(direction / 180 * Math.PI) * speed);
-                    particle.SpeedY = -(float)(Math.Sin(direction / 180 * Math.PI) * speed);
+                    particle.SpeedX = 0;
+                    particle.SpeedY = 0;
+
+                    particle.IsTeleported = false;
+
                     particle.Radius = 2 + Particle.rand.Next(10);
                 }
+
                 else
                 {
-                    float gX = gravityPoints[0].X - particle.X;
-                    float gY = gravityPoints[0].Y - particle.Y;
+                    if (Teleporter != null && !particle.IsTeleported)
+                    {
+                        float gX = Teleporter.Entry.X - particle.X;
+                        float gY = Teleporter.Entry.Y - particle.Y;
 
-                    // считаем квадрат расстояния между частицей и точкой r^2
-                    float r2 = gX * gX + gY * gY;
-                    float M = 100; // сила притяжения к точке, пусть 100 будет
+                        float distanceSquared = gX * gX + gY * gY;
 
-                    // пересчитываем вектор скорости с учетом притяжения к точке
-                    particle.SpeedX += (gX) * M / r2;
-                    particle.SpeedY += (gY) * M / r2;
-                    particle.SpeedX += GravitationX;
-                    particle.SpeedY += GravitationY;
+                        if (distanceSquared > 1)
+                        {
+                            float gravityStrength = 10f;
+                            particle.SpeedX += gX * gravityStrength / distanceSquared;
+                            particle.SpeedY += gY * gravityStrength / distanceSquared;
+                        }
+                    }
+
                     particle.X += particle.SpeedX;
                     particle.Y += particle.SpeedY;
+                    if (Teleporter != null && Teleporter.CheckCollision(particle))
+                    {
+                        particle.X = Teleporter.Exit.X;
+                        particle.Y = Teleporter.Exit.Y;
+
+                        particle.IsTeleported = true;
+                    }
                 }
             }
             for (var i = 0; i < 10; ++i)
             {
-                if (particles.Count < 200)
+                if (particles.Count < 50)
                 {
-                    var particle = new ParticleColorful();
-                    particle.FromColor = Color.Yellow;
-                    particle.ToColor = Color.FromArgb(0, Color.Magenta);
-                    particle.X = MousePositionX;
-                    particle.Y = MousePositionY;
+                    var particle = new ParticleColorful
+                    {
+                        FromColor = Color.Yellow,
+                        ToColor = Color.FromArgb(0, Color.Magenta),
+                        X = Teleporter != null ? Teleporter.Entry.X + 20 : 0,
+                        Y = Teleporter != null ? Teleporter.Entry.Y + 20 : 0
+                    };
                     particles.Add(particle);
                 }
                 else
@@ -75,6 +90,7 @@ namespace laba6_technology
             {
                 particle.Draw(g);
             }
+
             foreach (var point in gravityPoints)
             {
                 g.FillEllipse(
@@ -84,6 +100,27 @@ namespace laba6_technology
                     10,
                     10
                 );
+            }
+
+            if (Teleporter != null)
+            {
+                g.DrawEllipse(
+                    Pens.Blue,
+                    Teleporter.Entry.X - Teleporter.Radius,
+                    Teleporter.Entry.Y - Teleporter.Radius,
+                    Teleporter.Radius * 2,
+                    Teleporter.Radius * 2);
+                //g.FillEllipse(
+                //    Brushes.Green,
+                //    Teleporter.Exit.X - 5,
+                //    Teleporter.Exit.Y - 5,
+                //    10,
+                //    10);
+                g.DrawEllipse(Pens.Green,
+                    Teleporter.Exit.X - Teleporter.Radius,
+                    Teleporter.Exit.Y - Teleporter.Radius,
+                    Teleporter.Radius * 2,
+                    Teleporter.Radius * 2);
             }
         }
     }

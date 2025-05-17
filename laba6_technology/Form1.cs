@@ -1,34 +1,57 @@
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
 namespace laba6_technology
 {
     public partial class Form1 : Form
     {
-        List<Particle> particles = new List<Particle>();
-        Emitter emitter = new Emitter();
+        private Emitter emitter = new Emitter();
+        private Teleporter teleporter;
+        private bool isMouseDown = false;
+        private Point lastMousePos;
+
         public Form1()
         {
             InitializeComponent();
+
             picDisplay.Image = new Bitmap(picDisplay.Width, picDisplay.Height);
-            emitter.gravityPoints.Add(new Point(
-            picDisplay.Width / 2, picDisplay.Height / 2
-        ));
+
+            var center = new Point(picDisplay.Width / 2, picDisplay.Height / 2);
+            teleporter = new Teleporter(center, new Point(center.X + 100, center.Y));
+            emitter.Teleporter = teleporter;
+            emitter.ParticleSpawnPoint = new PointF(100, 100);
+
+            timer1.Interval = 30;
+            timer1.Tick += timer1_Tick;
+            timer1.Start();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             emitter.UpdateState();
+
             using (var g = Graphics.FromImage(picDisplay.Image))
             {
                 g.Clear(Color.Black);
                 emitter.Render(g);
             }
+
             picDisplay.Invalidate();
+
         }
-        
-        private void picDisplay_MouseMove(object sender, MouseEventArgs e)
+        private void picDisplay_MouseClick(object sender, MouseEventArgs e)
         {
-            // в обработчике заносим положение мыши в переменные для хранения положения мыши
-            emitter.MousePositionX = e.X;
-            emitter.MousePositionY = e.Y;
+            if (e.Button == MouseButtons.Left && Control.ModifierKeys == Keys.None)
+            {
+                teleporter.Entry = e.Location;
+                picDisplay.Invalidate();
+            }
+            else if (e.Button == MouseButtons.Right && Control.ModifierKeys == Keys.None)
+            {
+                teleporter.Exit = e.Location;
+                picDisplay.Invalidate();
+            }
         }
     }
 }
