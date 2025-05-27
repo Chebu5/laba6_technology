@@ -7,15 +7,13 @@ namespace laba6_technology
     {
         private List<Particle> particles = new List<Particle>();
         public List<Point> gravityPoints = new List<Point>();
-        public int MousePositionX;
-        public int MousePositionY;
+        
         public float GravitationX = 0;
         public float GravitationY = 1;
         public PointF ParticleSpawnPoint { get; set; }
 
         public Teleporter Teleporter { get; set; }
 
-        public int ParticlesCount => particles.Count;
 
         public void UpdateState()
         {
@@ -27,18 +25,18 @@ namespace laba6_technology
                     particle.Life = 20 + Particle.rand.Next(100);
                     particle.X = ParticleSpawnPoint.X;
                     particle.Y = ParticleSpawnPoint.Y;
-
-                    particle.SpeedX = 0;
-                    particle.SpeedY = 0;
+                    double angle =11* Math.PI/6 + (Particle.rand.NextDouble() * 2 - 1);
+                    float speed = (float)Particle.rand.NextDouble();
+                    particle.SpeedX = (float)(Math.Cos(angle) * speed);
+                    particle.SpeedY = (float)(Math.Sin(angle) * speed);
 
                     particle.IsTeleported = false;
 
                     particle.Radius = 2 + Particle.rand.Next(10);
                 }
-
                 else
                 {
-                    if (Teleporter != null && !particle.IsTeleported)
+                    if (!particle.IsTeleported)
                     {
                         float gX = Teleporter.Entry.X - particle.X;
                         float gY = Teleporter.Entry.Y - particle.Y;
@@ -55,7 +53,8 @@ namespace laba6_technology
 
                     particle.X += particle.SpeedX;
                     particle.Y += particle.SpeedY;
-                    if (Teleporter != null && Teleporter.CheckCollision(particle))
+
+                    if (Teleporter.CheckCollision(particle))
                     {
                         particle.X = Teleporter.Exit.X;
                         particle.Y = Teleporter.Exit.Y;
@@ -64,17 +63,24 @@ namespace laba6_technology
                     }
                 }
             }
-            for (var i = 0; i < 10; ++i)
+
+            for (var i = 0; i < 20; ++i)
             {
-                if (particles.Count < 50)
+                if (particles.Count < 100)
                 {
                     var particle = new ParticleColorful
                     {
-                        FromColor = Color.Yellow,
+                        FromColor = Color.OrangeRed,
                         ToColor = Color.FromArgb(0, Color.Magenta),
-                        X = Teleporter != null ? Teleporter.Entry.X + 20 : 0,
-                        Y = Teleporter != null ? Teleporter.Entry.Y + 20 : 0
+                        X = Teleporter.Entry.X + 20,
+                        Y = Teleporter.Entry.Y + 20
                     };
+                    //double baseAngle = 10 * Math.PI / 3;
+                    //double spread = 100 * Math.PI / 180;
+                    double angle =11*Math.PI/6;
+                    float speed = 0.1f + (float)Particle.rand.NextDouble() * 1.0f;
+                    particle.SpeedX = (float)(Math.Cos(angle) * speed);
+                    particle.SpeedY = (float)(Math.Sin(angle) * speed);
                     particles.Add(particle);
                 }
                 else
@@ -83,6 +89,7 @@ namespace laba6_technology
                 }
             }
         }
+
 
         public void Render(Graphics g)
         {
@@ -101,27 +108,18 @@ namespace laba6_technology
                     10
                 );
             }
-
-            if (Teleporter != null)
-            {
                 g.DrawEllipse(
                     Pens.Blue,
                     Teleporter.Entry.X - Teleporter.Radius,
                     Teleporter.Entry.Y - Teleporter.Radius,
                     Teleporter.Radius * 2,
                     Teleporter.Radius * 2);
-                //g.FillEllipse(
-                //    Brushes.Green,
-                //    Teleporter.Exit.X - 5,
-                //    Teleporter.Exit.Y - 5,
-                //    10,
-                //    10);
                 g.DrawEllipse(Pens.Green,
                     Teleporter.Exit.X - Teleporter.Radius,
                     Teleporter.Exit.Y - Teleporter.Radius,
                     Teleporter.Radius * 2,
                     Teleporter.Radius * 2);
-            }
+            
         }
     }
 }

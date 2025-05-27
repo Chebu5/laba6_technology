@@ -20,7 +20,7 @@ namespace laba6_technology
             var center = new Point(picDisplay.Width / 2, picDisplay.Height / 2);
             teleporter = new Teleporter(center, new Point(center.X + 100, center.Y));
             emitter.Teleporter = teleporter;
-            emitter.ParticleSpawnPoint = new PointF(100, 100);
+            emitter.ParticleSpawnPoint = new PointF(250, 140);
 
             timer1.Interval = 30;
             timer1.Tick += timer1_Tick;
