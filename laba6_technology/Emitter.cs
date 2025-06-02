@@ -7,14 +7,11 @@ namespace laba6_technology
     {
         private List<Particle> particles = new List<Particle>();
         public List<Point> gravityPoints = new List<Point>();
-        
         public float GravitationX = 0;
         public float GravitationY = 1;
         public PointF ParticleSpawnPoint { get; set; }
 
         public Teleporter Teleporter { get; set; }
-
-
         public void UpdateState()
         {
             foreach (var particle in particles)
@@ -75,8 +72,6 @@ namespace laba6_technology
                         X = Teleporter.Entry.X + 20,
                         Y = Teleporter.Entry.Y + 20
                     };
-                    //double baseAngle = 10 * Math.PI / 3;
-                    //double spread = 100 * Math.PI / 180;
                     double angle =11*Math.PI/6;
                     float speed = 0.1f + (float)Particle.rand.NextDouble() * 1.0f;
                     particle.SpeedX = (float)(Math.Cos(angle) * speed);
@@ -89,8 +84,6 @@ namespace laba6_technology
                 }
             }
         }
-
-
         public void Render(Graphics g)
         {
             foreach (var particle in particles)

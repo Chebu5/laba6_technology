@@ -13,8 +13,6 @@ namespace laba6_technology
         public bool IsTeleported = false;
         public float Life;
         public static Random rand = new Random();
-
-
         public virtual void Draw(Graphics g)
         {
             

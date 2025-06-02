@@ -8,8 +8,6 @@ namespace laba6_technology
     {
         private Emitter emitter = new Emitter();
         private Teleporter teleporter;
-        private bool isMouseDown = false;
-        private Point lastMousePos;
 
         public Form1()
         {
@@ -22,9 +20,9 @@ namespace laba6_technology
             emitter.Teleporter = teleporter;
             emitter.ParticleSpawnPoint = new PointF(250, 140);
 
-            timer1.Interval = 30;
+            
             timer1.Tick += timer1_Tick;
-            timer1.Start();
+            
         }
 
         private void timer1_Tick(object sender, EventArgs e)

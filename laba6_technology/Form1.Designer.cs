@@ -56,7 +56,7 @@
             ClientSize = new Size(800, 450);
             Controls.Add(picDisplay);
             Name = "Form1";
-            Text = "Form1";
+            Text = "Частицы";
             ((System.ComponentModel.ISupportInitialize)picDisplay).EndInit();
             ResumeLayout(false);
         }
